@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Géolocalisation</title>
+</head>
+<body>
+  <h1>TD1 - Géolocalisation</h1>
+
+  <h2>getCurrentPosition()</h2>
+  <ul>
+    <li id="gcp-longitude">Longitude : null</li>
+    <li id="gcp-latitude">Latitude : null</li>
+    <li id="gcp-altitude">Altitude : null</li>
+    <li id="gcp-precision">Précision : null</li>
+    <li id="gcp-vitesse">Vitesse : null</li>
+    <li id="gcp-timestamp">Timestamp : null</li>
+  </ul>
+
+  <h2>watchPosition()</h2>
+  <ul>
+    <li id="wp-longitude">Longitude : null</li>
+    <li id="wp-latitude">Latitude : null</li>
+    <li id="wp-altitude">Altitude : null</li>
+    <li id="wp-precision">Précision : null</li>
+    <li id="wp-vitesse">Vitesse : null</li>
+    <li id="wp-timestamp">Timestamp : null</li>
+  </ul>
+
+  <script>
+    function remplir(prefix, position) {
+      const c = position.coords;
+      document.getElementById(prefix+'-longitude').textContent = 'Longitude : ' + c.longitude;
+      document.getElementById(prefix+'-latitude').textContent = 'Latitude : ' + c.latitude;
+      document.getElementById(prefix+'-altitude').textContent = 'Altitude : ' + (c.altitude ?? 'null') ;
+      document.getElementById(prefix+'-precision').textContent = 'Précision : ' + c.accuracy ;
+      document.getElementById(prefix+'-vitesse').textContent = 'Vitesse : ' + (c.speed ?? 'null') ;
+      document.getElementById(prefix+'-timestamp').textContent = 'Timestamp : ' + new Date(position.timestamp).toLocaleString();
+    }
+
+    function erreur(prefix, err) {
+      document.getElementById(prefix+'-longitude').textContent = 'Erreur : ' + (err.message || 'Inconnue');
+    }
+
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        pos => remplir('gcp', pos),
+        err => erreur('gcp', err),
+        options
+      );
+
+      navigator.geolocation.watchPosition(
+        pos => remplir('wp', pos),
+        err => erreur('wp', err),
+        options
+      );
+    } else {
+      document.getElementById('gcp-longitude').textContent = 'La géolocalisation n\'est pas supportée par ce navigateur.';
+      document.getElementById('wp-longitude').textContent = 'La géolocalisation n\'est pas supportée par ce navigateur.';
+    }
+  </script>
+</body>
+</html>
