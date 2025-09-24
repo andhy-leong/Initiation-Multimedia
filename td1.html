@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <title>Géolocalisation</title>
+</head>
+<body>
+  <h1>TD1 - Géolocalisation</h1>
+
+  <h2>getCurrentPosition()</h2>
+  <ul>
+    <li id="gcp-longitude">Longitude : null</li>
+    <li id="gcp-latitude">Latitude : null</li>
+    <li id="gcp-altitude">Altitude : null</li>
+    <li id="gcp-precision">Précision : null</li>
+    <li id="gcp-vitesse">Vitesse : null</li>
+    <li id="gcp-timestamp">Timestamp : null</li>
+  </ul>
+
+  <h2>watchPosition()</h2>
+  <ul>
+    <li id="wp-longitude">Longitude : null</li>
+    <li id="wp-latitude">Latitude : null</li>
+    <li id="wp-altitude">Altitude : null</li>
+    <li id="wp-precision">Précision : null</li>
+    <li id="wp-vitesse">Vitesse : null</li>
+    <li id="wp-timestamp">Timestamp : null</li>
+  </ul>
+
+  <div id="map" style="height: 400px; margin-top: 20px; border-radius: 8px;"></div>
+  
+ <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+ </script>
+
+  <script>
+    function remplir(prefix, position) {
+      const c = position.coords;
+      document.getElementById(prefix+'-longitude').textContent = 'Longitude : ' + c.longitude;
+      document.getElementById(prefix+'-latitude').textContent = 'Latitude : ' + c.latitude;
+      document.getElementById(prefix+'-altitude').textContent = 'Altitude : ' + (c.altitude ?? 'null') ;
+      document.getElementById(prefix+'-precision').textContent = 'Précision : ' + c.accuracy + " m";
+      document.getElementById(prefix+'-vitesse').textContent = 'Vitesse : ' + (c.speed ?? 'null') + " m/s" ;
+      document.getElementById(prefix+'-timestamp').textContent = 'Timestamp : ' + new Date(position.timestamp).toLocaleString();
+      updateMap(c.latitude, c.longitude, c.accuracy);
+
+    }
+
+    function erreur(prefix, err) {
+      document.getElementById(prefix+'-longitude').textContent = 'Erreur : ' + (err.message || 'Inconnue');
+    }
+
+    const options = { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 };
+
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        pos => remplir('gcp', pos),
+        err => erreur('gcp', err),
+        options
+      );
+
+      navigator.geolocation.watchPosition(
+        pos => remplir('wp', pos),
+        err => erreur('wp', err),
+        options
+      );
+    } else {
+      document.getElementById('gcp-longitude').textContent = 'La géolocalisation n\'est pas supportée par ce navigateur.';
+      document.getElementById('wp-longitude').textContent = 'La géolocalisation n\'est pas supportée par ce navigateur.';
+    }
+
+    // Pour la carte
+    const map = L.map('map').setView([0, 0], 2); 
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
+
+    let marker = null;
+    let circle = null;
+
+
+    // Mise à jour du marqueur en fonction de la position actuelle
+    function updateMap(lat, lon, accuracy) {
+        const latlng = [lat, lon];
+        map.setView(latlng, 16); // zoom sur la position
+        if (marker) {
+            marker.setLatLng(latlng); // déplace le marker 
+        } else {
+            marker = L.marker(latlng).addTo(map); // crée le marker pour la première fois
+        }
+        if (circle) {
+            circle.setLatLng(latlng).setRadius(accuracy);
+        } else {
+            circle = L.circle(latlng, {
+                radius: accuracy,       // rayon de précision en fonction de la précision
+                color: 'blue',
+                fillColor: 'blue',
+                fillOpacity: 0.2
+            }).addTo(map);
+        }
+        }
+
+
+  </script>
+</body>
+</html>
