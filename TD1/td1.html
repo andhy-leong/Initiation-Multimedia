@@ -144,7 +144,9 @@
                 fillOpacity: 0.2
             }).addTo(map);
         }
-        }
+        const dist = haversine(lat, lon, marseilleCoords[0], marseilleCoords[1]);
+        marker.bindPopup("Distance entre vous à Marseille : "+(dist/1000).toFixed(2) + " km").openPopup();
+      }
 
     // Fonction pour calculer la distance entre deux coordonnées
     function haversine(latitude1, longitude1, latitude2, longitude2){
