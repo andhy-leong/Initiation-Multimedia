@@ -82,6 +82,18 @@
     const niceCoords = [43.7000, 7.2667];
     L.marker(niceCoords).addTo(map).bindPopup("Nice").openPopup();
 
+    // Ajout du triangle des bermudes
+    const TriangleBermudes = [
+      [25.7617, -80.1918],   // Coordonnées Miami
+      [18.4655, -66.1057],   // Coordonnées San Juan
+      [32.3078, -64.7505]    // Coordonnées Bermudes
+    ];
+
+    L.polygon(TriangleBermudes, {
+      color: 'red',
+      fillColor: 'red',
+      fillOpacity: 0.5}).addTo(map).bindPopup("Triangle des Bermudes");
+
 
     // Mise à jour du marqueur en fonction de la position actuelle
     function updateMap(lat, lon, accuracy) {
