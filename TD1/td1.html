@@ -28,6 +28,9 @@
     <li id="wp-vitesse">Vitesse : null</li>
     <li id="wp-timestamp">Timestamp : null</li>
   </ul>
+  
+  <p id="distance-marseille">Distance jusqu'à Marseille : ...</p>
+
 
   <div id="map" style="height: 400px; margin-top: 20px; border-radius: 8px;"></div>
   
@@ -45,6 +48,10 @@
       document.getElementById(prefix+'-vitesse').textContent = 'Vitesse : ' + (c.speed ?? 'null') + " m/s" ;
       document.getElementById(prefix+'-timestamp').textContent = 'Timestamp : ' + new Date(position.timestamp).toLocaleString();
       updateMap(c.latitude, c.longitude, c.accuracy);
+
+      const dist = haversine(c.latitude, c.longitude, marseilleCoords[0], marseilleCoords[1]);
+      console.log("Distance vous à Marseille :", dist, "m");
+      document.getElementById('distance-marseille').textContent = "Distance jusqu'à Marseille : " + (dist/1000).toFixed(2) + "km";
 
     }
 
@@ -75,12 +82,12 @@
     const map = L.map('map').setView([0, 0], 2); 
     //L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
     L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
-  attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
-               '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-  subdomains: 'abcd',
-  minZoom: 0,
-  maxZoom: 20
-}).addTo(map);
+      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+                  '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      subdomains: 'abcd',
+      minZoom: 0,
+      maxZoom: 20
+    }).addTo(map);
 
 
     let marker = null;
@@ -138,6 +145,25 @@
             }).addTo(map);
         }
         }
+
+    // Fonction pour calculer la distance entre deux coordonnées
+    function haversine(latitude1, longitude1, latitude2, longitude2){
+      const rayonTerre = 6371e3; 
+      const degresEnRadians = degres => degres * Math.PI / 180;
+
+      const lat1Rad = degresEnRadians(latitude1);
+      const lat2Rad = degresEnRadians(latitude2);
+      const diffLat = degresEnRadians(latitude2 - latitude1);
+      const diffLon = degresEnRadians(longitude2 - longitude1);
+
+      const a = Math.sin(diffLat / 2) * Math.sin(diffLat / 2) + 
+                Math.cos(lat1Rad) * Math.cos(lat2Rad) *
+                Math.sin(diffLon / 2) * Math.sin(diffLon / 2);
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+      return rayonTerre * c;
+    }
 
 
   </script>
