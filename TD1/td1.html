@@ -78,6 +78,10 @@
     let marker = null;
     let circle = null;
 
+    // Ajout de Nice centre sur la map
+    const niceCoords = [43.7000, 7.2667];
+    L.marker(niceCoords).addTo(map).bindPopup("Nice").openPopup();
+
 
     // Mise à jour du marqueur en fonction de la position actuelle
     function updateMap(lat, lon, accuracy) {
