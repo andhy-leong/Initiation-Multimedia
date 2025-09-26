@@ -92,6 +92,7 @@
 
     let marker = null;
     let circle = null;
+    let routeLayer = null;
 
     // Coordonnées de marseille
     const marseilleCoords = [43.2965, 5.3698];
@@ -150,7 +151,26 @@
         }
         const dist = haversine(lat, lon, marseilleCoords[0], marseilleCoords[1]);
         marker.bindPopup("Distance entre vous à Marseille : "+(dist/1000).toFixed(2) + " km").openPopup();
+        
+        // Tracer itinéraire de ma position vers Nice
+        tracerItineraire(lat, lon, niceCoords);
       }
+    // Fonction tracer itinéraire 
+      function tracerItineraire(lat, lon, destination) {
+      if (routeLayer) map.removeLayer(routeLayer);
+      const url = `https://router.project-osrm.org/route/v1/driving/${lon},${lat};${destination[1]},${destination[0]}?overview=full&geometries=geojson`;
+      fetch(url)
+        .then(res => res.json())
+        .then(data => {
+          if (data.routes && data.routes.length > 0) {
+            routeLayer = L.geoJSON(data.routes[0].geometry, {
+              style: { color: 'purple', weight: 4, opacity: 0.7 }
+            }).addTo(map).bindPopup("Itinéraire vers Nice");
+          }
+        })
+        .catch(err => console.error("Erreur OSRM :", err));
+    } 
+
 
     // Fonction pour calculer la distance entre deux coordonnées
     function haversine(latitude1, longitude1, latitude2, longitude2){
