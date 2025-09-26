@@ -183,6 +183,19 @@
             }).addTo(map);
         });
 
+    //Utilisation d'une autre api "api gouv"
+    fetch("https://geo.api.gouv.fr/departements?geometry=contour")
+    .then(res => res.json())
+    .then(data => {
+      L.geoJSON(data, {
+        style: { color: "blue", weight: 2, fillOpacity: 0.1 },
+        onEachFeature: (feature, layer) => {
+          layer.bindPopup(`Département : ${feature.nom}`);
+        }
+      }).addTo(map);
+    })
+    .catch(err => console.error("Erreur chargement départements:", err));
+
 
   </script>
 </body>
