@@ -80,14 +80,14 @@
 
     // Pour la carte
     const map = L.map('map').setView([0, 0], 2); 
-    //L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
-    L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
-      attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
-                  '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-      subdomains: 'abcd',
-      minZoom: 0,
-      maxZoom: 20
-    }).addTo(map);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '&copy; OpenStreetMap contributors'}).addTo(map);
+    //L.tileLayer('https://stamen-tiles.a.ssl.fastly.net/toner-lite/{z}/{x}/{y}.png', {
+    //  attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, ' +
+    //              '<a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    //  subdomains: 'abcd',
+    //  minZoom: 0,
+    //  maxZoom: 20
+    //}).addTo(map);
 
 
     let marker = null;
@@ -123,6 +123,10 @@
       color: 'red',
       fillColor: 'red',
       fillOpacity: 0.5}).addTo(map).bindPopup("Triangle des Bermudes");
+    
+    function updateStatus(message, isError = false) {
+      console.log(message);
+    }
 
 
     // Mise à jour du marqueur en fonction de la position actuelle
@@ -166,6 +170,18 @@
 
       return rayonTerre * c;
     }
+
+    //Plage de nice GeoJSON
+    fetch("https://opendata.nicecotedazur.org/data/storage/f/2021-02-16T09%3A58%3A34.356Z/plages.geojson")
+        .then(res => res.json())
+        .then(data => {
+            L.geoJSON(data, {
+                onEachFeature: (feature, layer) => {
+                    layer.bindPopup("Plage : " + (feature.properties.nom || "inconnue"));
+                },
+                style: { color: "orange" }
+            }).addTo(map);
+        });
 
 
   </script>
