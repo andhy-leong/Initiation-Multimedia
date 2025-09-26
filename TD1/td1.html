@@ -93,6 +93,8 @@
     let marker = null;
     let circle = null;
     let routeLayer = null;
+    let routeLayerMapBox = null;
+    const mapboxToken = "pk.eyJ1IjoiY3YwNiIsImEiOiJjajg2MmpzYjcwbWdnMzNsc2NzM2l4eW0yIn0.TfDJipR5II7orUZaC848YA";
 
     // Coordonnées de marseille
     const marseilleCoords = [43.2965, 5.3698];
@@ -171,6 +173,18 @@
         .catch(err => console.error("Erreur OSRM :", err));
     } 
 
+    // Tracer un chemin avec MapBOX
+    function tracerItineraireMapbox(lat, lon, destination) {
+    if (routeLayerMapbox) map.removeLayer(routeLayerMapbox);
+    const url = `https://api.mapbox.com/directions/v5/mapbox/driving/${lon},${lat};${destination[1]},${destination[0]}?geometries=geojson&access_token=${mapboxToken}`;
+    fetch(url)
+      .then(res => res.json())
+      .then(data => {
+          if (data.routes && data.routes.length > 0) {
+              routeLayerMapbox = L.geoJSON(data.routes[0].geometry, {style: { color:'purple', weight:4, opacity:0.7}}).addTo(map);
+          }
+      });
+    }
 
     // Fonction pour calculer la distance entre deux coordonnées
     function haversine(latitude1, longitude1, latitude2, longitude2){
