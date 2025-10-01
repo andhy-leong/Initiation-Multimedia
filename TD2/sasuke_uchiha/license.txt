@@ -1,0 +1,11 @@
+Model Information:
+* title:	Sasuke Uchiha
+* source:	https://sketchfab.com/3d-models/sasuke-uchiha-bf7daaad42284111801df8def4df1a02
+* author:	KMB3D (https://sketchfab.com/kmb_jr)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Sasuke Uchiha" (https://sketchfab.com/3d-models/sasuke-uchiha-bf7daaad42284111801df8def4df1a02) by KMB3D (https://sketchfab.com/kmb_jr) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
