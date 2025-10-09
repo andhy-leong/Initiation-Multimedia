@@ -60,6 +60,8 @@ controls.minDistance = 3.5;   // distance minimale à la Terre
 controls.maxDistance = 9;  // distance maximale
 controls.rotateSpeed = 0.5; // vitesse de rotation
 
+
+
 // Ajout du repère sur la position de l'utilisateur
 if (navigator.geolocation) {
   navigator.geolocation.getCurrentPosition(
@@ -108,4 +110,47 @@ function animate(){
 }
 animate();
 
+// Utilisation de l'URL pour récupérer les drapeaux et les ppositions
+async function fetchCountries() {
+  try {
+    const response = await fetch('https://restcountries.com/v3.1/all?fields=name,flags,latlng');
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const countries = await response.json();
 
+    if (!Array.isArray(countries)) {
+      console.error("Format inattendu :", countries);
+      return;
+    }
+
+    const textureLoader = new THREE.TextureLoader();
+
+    countries.forEach(country => {
+      if (!country.latlng || !country.flags?.png) return;
+
+      const lat = country.latlng[0];
+      const lon = country.latlng[1];
+      const flagUrl = country.flags.png;
+      const name = country.name.common;
+
+      const flagTexture = textureLoader.load(flagUrl);
+      const spriteMaterial = new THREE.SpriteMaterial({
+        map: flagTexture,
+        transparent: true
+      });
+      const sprite = new THREE.Sprite(spriteMaterial);
+      sprite.scale.set(0.1, 0.06, 1);
+
+      const position = latLonToVector3(lat, lon, 3.05);
+      sprite.position.copy(position);
+
+      sprite.userData = { name };
+      scene.add(sprite);
+    });
+
+    console.log('Drapeaux bien chargés');
+  } catch (error) {
+    console.error('Erreur de chargement des pays :', error);
+  }
+}
+
+fetchCountries();
