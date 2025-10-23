@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>IA : Qu'est-ce que c'est ?</title>
+    <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        video { 
+            border: 3px solid #333;
+            border-radius: 10px;
+            transform: scaleX(-1); /* Effet miroir pour que ce soit plus intuitif */
+        }
+        #resultat {
+            margin-top: 20px;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+            background-color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <h1>Pointez votre caméra sur un objet</h1>
+    
+    <video id="video" width="640" height="480" autoplay muted></video>
+    
+    <h2 id="resultat">Chargement du modèle IA...</h2>
+
+    <script src="script.js"></script>
+</body>
+</html>
