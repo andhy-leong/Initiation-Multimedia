@@ -1,7 +1,5 @@
-// Attendre que la page soit complètement chargée
 window.addEventListener('load', function () {
 
-    // Le dictionnaire complet (je le réduis ici pour la lisibilité, mais gardez le vôtre !)
     const traductions = {
         'tench, Tinca tinca': 'tanche',
         'goldfish, Carassius auratus': 'poisson rouge',
@@ -1005,7 +1003,7 @@ window.addEventListener('load', function () {
         'toilet tissue, toilet paper, bathroom tissue': 'papier toilette'
     };
 
-    // 1. Récupérer les éléments HTML
+    // Récupérer les éléments HTML
     const video = document.getElementById('video');
     const resultatElement = document.getElementById('resultat');
     const descriptionElement = document.getElementById('description');
@@ -1014,9 +1012,8 @@ window.addEventListener('load', function () {
     let objetActuel = null;
     let stablePrediction = null;
     let predictionCounter = 0;
-    const CONFIDENCE_THRESHOLD = 0.7; // Seuil de confiance élevé
-    const STABILITY_THRESHOLD = 5;    // Nombre de fois où la prédiction doit être stable
-
+    const CONFIDENCE_THRESHOLD = 0.7; 
+    const STABILITY_THRESHOLD = 5;   
     async function classifyLoop() {
     const results = await classifier.classify(video);
     const prediction = results[0];
@@ -1030,18 +1027,23 @@ window.addEventListener('load', function () {
         predictionCounter = 1;
     }
 
-    // On met à jour l'affichage SEULEMENT si la prédiction est stable
-    // OU si la confiance est très élevée
     if ( (predictionCounter >= STABILITY_THRESHOLD || prediction.confidence > CONFIDENCE_THRESHOLD) && prediction.label !== objetActuel) {
+        objetActuel = prediction.label;
+
+        const englishLabelKey = prediction.label;
+        const nomAffiche = traductions[englishLabelKey] || englishLabelKey.split(',')[0];
+
+        resultatElement.innerText = `${nomAffiche} (${(prediction.confidence * 100).toFixed(0)}%)`;
+        descriptionElement.innerText = "Recherche de la description...";
         
-        // ... ici, on met à jour l'objetActuel, le titre et on appelle Wikipedia ...
-        // Le reste de votre code existant va ici.
+        const description = await fetchWikipediaDescription(nomAffiche);
+        descriptionElement.innerText = description;
     }
     
     classifyLoop();
 }
 
-    // 2. Fonction d'initialisation (setup)
+    // 2. Fonction d'initialisation 
     async function setup() {
         try {
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
@@ -1058,13 +1060,8 @@ window.addEventListener('load', function () {
         }
     }
 
-    // Fonction pour interroger l'API de Wikipédia (MISE À JOUR)
+    // Fonction pour interroger l'API de Wikipédia 
     async function fetchWikipediaDescription(termeDeRecherche) {
-        
-        // ===================================================================
-        // LA MODIFICATION EST ICI : on ajoute "&exsentences=2"
-        // pour limiter le résumé à 2 phrases.
-        // ===================================================================
         const endpoint = `https://fr.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=2&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(termeDeRecherche)}`;
         
         try {
@@ -1075,7 +1072,6 @@ window.addEventListener('load', function () {
             
             if (pageId !== '-1') {
                 const extract = pages[pageId].extract;
-                // Si l'extrait est vide même après la requête, on affiche un message par défaut.
                 return extract || "Aucun résumé disponible pour cet article.";
             } else {
                 return "Je ne connais pas cet objet. Impossible de trouver une page Wikipédia.";
@@ -1086,27 +1082,34 @@ window.addEventListener('load', function () {
         }
     }
 
-    // 3. La boucle de classification (inchangée)
-    async function classifyLoop() {
-        const results = await classifier.classify(video);
-        const prediction = results[0];
+    // 3. La boucle de classification 
+async function classifyLoop() {
+    const results = await classifier.classify(video);
+    const prediction = results[0];
 
-        if (prediction.label !== objetActuel) {
-            objetActuel = prediction.label;
-
-            const englishLabelKey = prediction.label;
-            const nomAffiche = traductions[englishLabelKey] || englishLabelKey.split(',')[0];
-
-            resultatElement.innerText = `${nomAffiche} (${(prediction.confidence * 100).toFixed(0)}%)`;
-            descriptionElement.innerText = "Recherche de la description...";
-            
-            const description = await fetchWikipediaDescription(nomAffiche);
-            descriptionElement.innerText = description;
-        }
-        
-        classifyLoop();
+    if (prediction.label === stablePrediction) {
+        predictionCounter++;
+    } else {
+        stablePrediction = prediction.label;
+        predictionCounter = 1;
     }
+    if ((predictionCounter >= STABILITY_THRESHOLD || prediction.confidence > CONFIDENCE_THRESHOLD) && prediction.label !== objetActuel) {
+        objetActuel = prediction.label;
 
-    // Lancer tout le processus
+        const englishLabelKey = prediction.label;
+        const nomAffiche = traductions[englishLabelKey] || englishLabelKey.split(',')[0];
+
+        resultatElement.innerText = `${nomAffiche} (${(prediction.confidence * 100).toFixed(0)}%)`;
+        
+        descriptionElement.innerText = "Recherche de la description...";
+
+        const description = await fetchWikipediaDescription(nomAffiche);
+        descriptionElement.innerText = description;
+    
+    }
+    
+    classifyLoop();
+}
+
     setup();
 });

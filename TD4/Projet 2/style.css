@@ -116,3 +116,26 @@ body {
         height: 60vh;
     }
 }
+
+/* Style pour le nouveau bouton micro */
+#mic-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 4px;
+    background-color: #007BFF;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 14px;
+}
+
+#mic-btn:hover {
+    background-color: #0056b3;
+}
+
+#mic-btn.listening {
+    background-color: #dc3545; /* Rouge pour indiquer l'écoute */
+}
