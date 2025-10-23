@@ -1,5 +1,7 @@
+// Attendre que la page soit complètement chargée
 window.addEventListener('load', function () {
-    // Le dictionnaire complet doit être ici...
+
+    // Le dictionnaire complet (je le réduis ici pour la lisibilité, mais gardez le vôtre !)
     const traductions = {
         'tench, Tinca tinca': 'tanche',
         'goldfish, Carassius auratus': 'poisson rouge',
@@ -1007,91 +1009,74 @@ window.addEventListener('load', function () {
     const video = document.getElementById('video');
     const resultatElement = document.getElementById('resultat');
     const descriptionElement = document.getElementById('description');
-    const switchCamButton = document.getElementById('switchCamButton');
     
-    // Variables pour la gestion des caméras et de l'état
     let classifier;
     let objetActuel = null;
-    let currentStream;
-    let videoDevices = []; // Stockera la liste des caméras
-    let currentDeviceIndex = 0; // Index de la caméra actuellement utilisée
 
-    // Fonction pour démarrer le flux vidéo avec un appareil spécifique
-    async function startStream(deviceId) {
-        // Arrêter l'ancien flux s'il existe, pour libérer la caméra
-        if (currentStream) {
-            currentStream.getTracks().forEach(track => track.stop());
-        }
-
-        const constraints = {
-            video: {
-                deviceId: deviceId ? { exact: deviceId } : undefined
-            }
-        };
-
-        // Gérer l'effet miroir : la caméra frontale doit être inversée, la caméra arrière non.
-        const currentDevice = videoDevices[currentDeviceIndex];
-        if (currentDevice && currentDevice.label.toLowerCase().includes('front')) {
-            video.style.transform = 'scaleX(-1)';
-        } else {
-            video.style.transform = 'scaleX(1)';
-        }
-        
-        // Demander le nouveau flux vidéo
-        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-        video.srcObject = currentStream;
-        await new Promise((resolve) => {
-            video.onloadedmetadata = () => resolve();
-        });
-    }
-
-    // Fonction pour changer de caméra
-    async function switchCamera() {
-        if (videoDevices.length > 1) {
-            // Passer à l'appareil suivant dans la liste (et revenir au début si on est à la fin)
-            currentDeviceIndex = (currentDeviceIndex + 1) % videoDevices.length;
-            const nextDeviceId = videoDevices[currentDeviceIndex].deviceId;
-            await startStream(nextDeviceId);
-        }
-    }
-
-    // Fonction principale d'initialisation (setup)
+    // 2. Fonction d'initialisation (setup)
     async function setup() {
         try {
-            // Lister tous les appareils multimédias et filtrer pour ne garder que les caméras
-            const devices = await navigator.mediaDevices.enumerateDevices();
-            videoDevices = devices.filter(device => device.kind === 'videoinput');
-
-            if (videoDevices.length === 0) {
-                throw new Error("Aucune caméra trouvée.");
-            }
-            
-            // Si on a plus d'une caméra, on affiche le bouton et on attache l'événement
-            if (videoDevices.length > 1) {
-                switchCamButton.style.display = 'block';
-                switchCamButton.addEventListener('click', switchCamera);
-            }
-
-            // Démarrer avec la première caméra de la liste
-            await startStream(videoDevices[currentDeviceIndex].deviceId);
-
-            // Charger le modèle d'IA et lancer la boucle de détection
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            await new Promise((resolve) => {
+                video.onloadedmetadata = () => resolve();
+            });
             classifier = await ml5.imageClassifier('MobileNet');
             resultatElement.innerText = "Prêt !";
             classifyLoop();
-
         } catch (err) {
             console.error("Erreur critique lors de l'initialisation : ", err);
             resultatElement.innerText = "Erreur.";
-            descriptionElement.innerText = "Vérifiez les autorisations de la caméra.";
         }
     }
 
-    async function fetchWikipediaDescription(term) { /* ... cette fonction reste la même ... */ }
-    
-    // La boucle de classification reste la même
+    // Fonction pour interroger l'API de Wikipédia (MISE À JOUR)
+    async function fetchWikipediaDescription(termeDeRecherche) {
+        
+        // ===================================================================
+        // LA MODIFICATION EST ICI : on ajoute "&exsentences=2"
+        // pour limiter le résumé à 2 phrases.
+        // ===================================================================
+        const endpoint = `https://fr.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=2&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(termeDeRecherche)}`;
+        
+        try {
+            const response = await fetch(endpoint);
+            const data = await response.json();
+            const pages = data.query.pages;
+            const pageId = Object.keys(pages)[0];
+            
+            if (pageId !== '-1') {
+                const extract = pages[pageId].extract;
+                // Si l'extrait est vide même après la requête, on affiche un message par défaut.
+                return extract || "Aucun résumé disponible pour cet article.";
+            } else {
+                return "Je ne connais pas cet objet. Impossible de trouver une page Wikipédia.";
+            }
+        } catch (error) {
+            console.error("Erreur de l'API Wikipédia:", error);
+            return "Impossible de charger la description.";
+        }
+    }
+
+    // 3. La boucle de classification (inchangée)
     async function classifyLoop() {
-        // ...
+        const results = await classifier.classify(video);
+        const prediction = results[0];
+
+        if (prediction.label !== objetActuel) {
+            objetActuel = prediction.label;
+
+            const englishLabelKey = prediction.label;
+            const nomAffiche = traductions[englishLabelKey] || englishLabelKey.split(',')[0];
+
+            resultatElement.innerText = `${nomAffiche} (${(prediction.confidence * 100).toFixed(0)}%)`;
+            descriptionElement.innerText = "Recherche de la description...";
+            
+            const description = await fetchWikipediaDescription(nomAffiche);
+            descriptionElement.innerText = description;
+        }
+        
+        classifyLoop();
     }
 
     // Lancer tout le processus
