@@ -1,10 +1,7 @@
-// Attendre que la page soit complètement chargée avant de lancer le script
+// Attendre que la page soit complètement chargée
 window.addEventListener('load', function () {
 
-    // ===================================================================
-    // Dictionnaire de traduction COMPLET (Anglais -> Français)
-    // Contient les 1000 objets que le modèle MobileNet peut reconnaître.
-    // ===================================================================
+    // Le dictionnaire complet (je le réduis ici pour la lisibilité, mais gardez le vôtre !)
     const traductions = {
         'tench, Tinca tinca': 'tanche',
         'goldfish, Carassius auratus': 'poisson rouge',
@@ -1008,59 +1005,80 @@ window.addEventListener('load', function () {
         'toilet tissue, toilet paper, bathroom tissue': 'papier toilette'
     };
 
-    // 1. Récupérer les éléments importants de notre page HTML
+    // 1. Récupérer les éléments HTML
     const video = document.getElementById('video');
     const resultatElement = document.getElementById('resultat');
-    let classifier; // Variable qui stockera notre modèle d'IA
+    const descriptionElement = document.getElementById('description');
+    
+    let classifier;
+    let objetActuel = null;
 
-    // 2. Fonction principale pour initialiser l'application
-    // 'async' nous permet d'utiliser 'await' pour attendre que les opérations longues se terminent
+    // 2. Fonction d'initialisation (setup)
     async function setup() {
         try {
-            // Demander l'accès à la caméra et l'afficher dans la balise vidéo
             const stream = await navigator.mediaDevices.getUserMedia({ video: true });
             video.srcObject = stream;
-
-            // Petite astuce pour s'assurer que la vidéo est chargée avant de continuer
             await new Promise((resolve) => {
                 video.onloadedmetadata = () => resolve();
             });
-
-            // Charger le modèle de reconnaissance d'image 'MobileNet'
-            // 'await' met le script en pause jusqu'à ce que le modèle soit prêt
             classifier = await ml5.imageClassifier('MobileNet');
-            resultatElement.innerText = "Pointez la caméra sur un objet";
-
-            // Lancer la boucle de classification en continu
+            resultatElement.innerText = "Prêt !";
             classifyLoop();
-
         } catch (err) {
             console.error("Erreur critique lors de l'initialisation : ", err);
-            resultatElement.innerText = "Erreur : Impossible d'accéder à la caméra ou de charger le modèle.";
+            resultatElement.innerText = "Erreur.";
         }
     }
 
-    // 3. La boucle qui analyse la vidéo en permanence
-    async function classifyLoop() {
-        // 'await' attend que le modèle ait fini d'analyser l'image de la vidéo
-        const results = await classifier.classify(video);
+    // Fonction pour interroger l'API de Wikipédia (MISE À JOUR)
+    async function fetchWikipediaDescription(termeDeRecherche) {
         
-        // On prend la prédiction la plus probable (la première du tableau)
-        const prediction = results[0];
+        // ===================================================================
+        // LA MODIFICATION EST ICI : on ajoute "&exsentences=2"
+        // pour limiter le résumé à 2 phrases.
+        // ===================================================================
+        const endpoint = `https://fr.wikipedia.org/w/api.php?action=query&prop=extracts&exsentences=2&exintro&explaintext&format=json&origin=*&titles=${encodeURIComponent(termeDeRecherche)}`;
         
-        // La clé de traduction est l'étiquette anglaise originale
-        const englishLabelKey = prediction.label;
-        
-        // On cherche sa traduction. Si elle n'existe pas, on garde le mot anglais (en ne prenant que la première partie).
-        const nomAffiche = traductions[englishLabelKey] || englishLabelKey.split(',')[0];
+        try {
+            const response = await fetch(endpoint);
+            const data = await response.json();
+            const pages = data.query.pages;
+            const pageId = Object.keys(pages)[0];
+            
+            if (pageId !== '-1') {
+                const extract = pages[pageId].extract;
+                // Si l'extrait est vide même après la requête, on affiche un message par défaut.
+                return extract || "Aucun résumé disponible pour cet article.";
+            } else {
+                return "Je ne connais pas cet objet. Impossible de trouver une page Wikipédia.";
+            }
+        } catch (error) {
+            console.error("Erreur de l'API Wikipédia:", error);
+            return "Impossible de charger la description.";
+        }
+    }
 
-        // On met à jour le texte sur la page avec le nom traduit et le pourcentage de confiance
-        resultatElement.innerText = `${nomAffiche} (${(prediction.confidence * 100).toFixed(0)}%)`;
+    // 3. La boucle de classification (inchangée)
+    async function classifyLoop() {
+        const results = await classifier.classify(video);
+        const prediction = results[0];
+
+        if (prediction.label !== objetActuel) {
+            objetActuel = prediction.label;
+
+            const englishLabelKey = prediction.label;
+            const nomAffiche = traductions[englishLabelKey] || englishLabelKey.split(',')[0];
+
+            resultatElement.innerText = `${nomAffiche} (${(prediction.confidence * 100).toFixed(0)}%)`;
+            descriptionElement.innerText = "Recherche de la description...";
+            
+            const description = await fetchWikipediaDescription(nomAffiche);
+            descriptionElement.innerText = description;
+        }
         
-        // On relance la fonction pour analyser l'image suivante, créant une boucle infinie
         classifyLoop();
     }
 
-    // On lance la fonction d'initialisation pour que tout démarre !
+    // Lancer tout le processus
     setup();
 });
