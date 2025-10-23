@@ -1012,6 +1012,34 @@ window.addEventListener('load', function () {
     
     let classifier;
     let objetActuel = null;
+    let stablePrediction = null;
+    let predictionCounter = 0;
+    const CONFIDENCE_THRESHOLD = 0.7; // Seuil de confiance élevé
+    const STABILITY_THRESHOLD = 5;    // Nombre de fois où la prédiction doit être stable
+
+    async function classifyLoop() {
+    const results = await classifier.classify(video);
+    const prediction = results[0];
+
+    // Si la nouvelle prédiction est la même que la stable
+    if (prediction.label === stablePrediction) {
+        predictionCounter++;
+    } else {
+        // Sinon, on réinitialise
+        stablePrediction = prediction.label;
+        predictionCounter = 1;
+    }
+
+    // On met à jour l'affichage SEULEMENT si la prédiction est stable
+    // OU si la confiance est très élevée
+    if ( (predictionCounter >= STABILITY_THRESHOLD || prediction.confidence > CONFIDENCE_THRESHOLD) && prediction.label !== objetActuel) {
+        
+        // ... ici, on met à jour l'objetActuel, le titre et on appelle Wikipedia ...
+        // Le reste de votre code existant va ici.
+    }
+    
+    classifyLoop();
+}
 
     // 2. Fonction d'initialisation (setup)
     async function setup() {

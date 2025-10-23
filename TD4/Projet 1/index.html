@@ -64,6 +64,24 @@
         }
         #resultat { font-size: 1.8em; font-weight: bold; margin: 0 0 15px 0; min-height: 40px; }
         #description { font-size: 1em; color: #555; line-height: 1.5; min-height: 100px; }
+
+        /* Pour les écrans de moins de 1100 pixels de large (tablettes, téléphones) */
+        @media (max-width: 1100px) {
+            #container {
+                flex-direction: column; /* On empile les éléments verticalement */
+                align-items: center;
+                gap: 15px;
+            }
+            
+            video {
+                width: 90vw; /* La vidéo prend 90% de la largeur de l'écran */
+                height: auto;
+            }
+
+            #infoPanel {
+                width: 90vw; /* Le panneau prend aussi 90% de la largeur */
+            }
+        }
     </style>
 </head>
 <body>
