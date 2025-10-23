@@ -3,46 +3,258 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RAHARISON Leong Andhy R506</title>
+  <title>RAHARISON Leong - Initiation Multimédia</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
   <style>
+    /* Définition des variables de couleur inspirées de votre style.css */
+    :root {
+      --bg: #0d0d0d;
+      --text: #eaeaea;
+      --accent: #ff6600;
+      --card: #1a1a1a;
+      --radius: 12px;
+      --transition: 0.3s ease;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f9;
       margin: 0;
-      padding: 20px;
+      /* Utilisation de la même police que votre portfolio */
+      font-family: "Montserrat", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column; 
+      align-items: center;
+      box-sizing: border-box;
+    }
+    
+    /* Conteneur principal qui imite la structure de vos sections */
+    .main-container {
+      width: 100%;
+      max-width: 800px;
       text-align: center;
+      padding: 60px 20px; /* Plus de padding pour espacer du footer */
+      flex-grow: 1; 
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
+
+    /* Style du titre principal, comme les titres de section de votre site */
     h1 {
-      color: #333;
+      font-size: 2rem;
+      color: var(--accent);
+      margin-bottom: 3rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
     }
-    ul {
-      list-style-type: none;
+
+    /* Grille pour organiser les liens en cartes, comme vos projets */
+    .links-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+      list-style: none;
       padding: 0;
+      margin: 0;
     }
-    li {
-      margin: 10px 0;
-    }
-    a {
+
+    /* Style des cartes pour chaque lien */
+    .link-card a {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background-color: var(--card);
+      color: var(--text);
+      padding: 1.2rem 1.5rem;
+      border-radius: var(--radius);
       text-decoration: none;
-      color: #007bff;
-      font-size: 1.2em;
+      font-size: 1rem;
+      font-weight: 500;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: transform var(--transition), box-shadow var(--transition), border-left-color var(--transition);
+      border-left: 4px solid transparent; /* Bordure pour l'effet de survol */
     }
-    a:hover {
-      text-decoration: underline;
+    
+    /* Effet au survol, identique à celui de vos cartes de projet */
+    .link-card a:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      border-left-color: var(--accent); /* La bordure apparaît au survol */
+    }
+
+    /* Style pour les icônes */
+    .link-card a i {
+      color: var(--accent);
+      font-size: 1.2rem;
+    }
+
+    /* --- STYLES POUR LE FOOTER MIS À JOUR --- */
+    footer {
+      width: 100%;
+      background-color: var(--card);
+      padding: 3rem 2rem 1rem 2rem; /* padding bas réduit */
+      border-top: 2px solid var(--accent);
+      color: var(--text);
+    }
+
+    .footer-container {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 0 auto;
+      gap: 2rem;
+    }
+
+    .footer-center h3, .footer-right h3 {
+      font-size: 1.4rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    
+    .footer-center p {
+      margin: 0.5rem 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.8rem;
+    }
+
+    .footer-center a {
+      color: var(--text);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+
+    .footer-center a:hover {
+      color: var(--accent);
+    }
+    
+    .social-links {
+      display: flex;
+      justify-content: center;
+      gap: 1.5rem;
+      margin-top: 1rem;
+    }
+
+    .social-links a {
+      color: var(--text);
+      font-size: 1.8rem;
+      transition: color var(--transition), transform var(--transition);
+    }
+
+    .social-links a:hover {
+      color: var(--accent);
+      transform: translateY(-3px);
+    }
+    
+    /* Style pour le conteneur 3D */
+    #footer-3d-container {
+      width: 100%;
+      height: 150px; /* Hauteur pour l'objet 3D */
+      margin: 2rem 0;
+      cursor: grab;
+    }
+    
+    #footer-3d-container:active {
+        cursor: grabbing;
+    }
+
+    .footer-bottom {
+      text-align: center;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 0.9rem;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    /* Responsive pour le footer */
+    @media (max-width: 768px) {
+      .footer-container {
+        flex-direction: column;
+        text-align: center;
+      }
     }
   </style>
 </head>
 <body>
-  <h1>Initiation Multimédia</h1>
-  <ul>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD1/td1.html" target="_blank">TD1</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD2/td2.html" target="_blank">TD2 Three.js</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD2/td2babylone.html" target="_blank">TD2 Babylone</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD3/td3exo1.html" target="_blank">TD3 Exercice 1</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD3/td3exo2.html" target="_blank">TD3 Exercice 2</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD3/telephone.html" target="_blank">Objet 3D</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD4/Projet1/index.html" target="_blank">TD4 - Reconnaissance d'objet</a></li>
-    <li><a href="https://andhy-leong.github.io/Initiation-Multimedia/TD4/Projet2/index.html" target="_blank">TD4 - Navigation sur la carte grâce à des gestes de la main</a></li>
-  </ul>
+
+  <div class="main-container">
+    <h1>Initiation Multimédia</h1>
+    
+    <ul class="links-grid">
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD1/td1.html" target="_blank">
+          <i class="fas fa-map-marker-alt"></i> <span>TD1 - Géolocalisation</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD2/td2.html" target="_blank">
+          <i class="fas fa-cube"></i> <span>TD2 - Three.js</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD2/td2babylone.html" target="_blank">
+          <i class="fas fa-cubes"></i> <span>TD2 - Babylon JS</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD3/td3exo1.html" target="_blank">
+          <i class="fas fa-globe-americas"></i> <span>TD3 - Globe avec drapeau</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD3/td3exo2.html" target="_blank">
+          <i class="fas fa-map-marked-alt"></i> <span>TD3 - Carte et globe intéractive</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD3/telephone.html" target="_blank">
+          <i class="fas fa-mobile-alt"></i> <span>TD3 - Caméra avec objet 3D</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD4/Projet1/index.html" target="_blank">
+          <i class="fas fa-camera"></i> <span>TD4 - Reconnaissance d'objet</span>
+        </a>
+      </li>
+      <li class="link-card">
+        <a href="https://andhy-leong.github.io/Initiation-Multimedia/TD4/Projet2/index.html" target="_blank">
+          <i class="fas fa-hand-paper"></i> <span>TD4 - Navigation par gestes</span>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <footer>
+    <div class="footer-container">
+      <div class="footer-center">
+        <h3 data-text="footer-contact">Contact</h3>
+        <p><i class="fas fa-envelope"></i> <a href="mailto:andhyleong29@gmail.com">andhyleong29@gmail.com</a></p>
+      </div>
+      <div class="footer-right">
+        <h3 data-text="footer-suivez">Suivez-moi</h3>
+        <div class="social-links">
+          <a href="https://github.com/andhy-leong" target="_blank"><i class="fab fa-github"></i></a>
+          <a href="https://www.linkedin.com/in/leong-foc-sing-andhy-raharison-2404322b7/" target="_blank"><i class="fab fa-linkedin"></i></a>
+          <a href="https://www.instagram.com/andhy_leong/" target="_blank"><i class="fab fa-instagram"></i></a>
+          <a href="https://www.youtube.com/@andhy_leong" target="_blank"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </div>
+    <div id="footer-3d-container"></div>
+    <div class="footer-bottom">
+      <p data-text="footer-copyright">&copy; 2025 Raharison Leong Foc Sing Andhy</p>
+    </div>
+  </footer>
+
 </body>
 </html>
