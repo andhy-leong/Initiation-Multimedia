@@ -5,7 +5,7 @@
     <title>IA : Qu'est-ce que c'est ?</title>
     <script src="https://unpkg.com/ml5@latest/dist/ml5.min.js"></script>
     <style>
-        body { 
+        body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             display: flex;
             flex-direction: column;
@@ -14,29 +14,38 @@
             height: 100vh;
             margin: 0;
             background-color: #f0f0f0;
+            color: #333;
         }
-        video { 
-            border: 3px solid #333;
-            border-radius: 10px;
-            transform: scaleX(-1); /* Effet miroir pour que ce soit plus intuitif */
+        h1 {
+            color: #1a1a1a;
+        }
+        video {
+            border: 4px solid #fff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            /* Effet miroir pour que le mouvement soit plus intuitif pour l'utilisateur */
+            transform: scaleX(-1);
         }
         #resultat {
-            margin-top: 20px;
-            font-size: 1.5em;
+            margin-top: 25px;
+            font-size: 1.8em;
             font-weight: bold;
-            color: #333;
             background-color: white;
-            padding: 10px 20px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 12px 24px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            min-height: 40px; /* Pour éviter que la mise en page ne saute pendant le chargement */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
     </style>
 </head>
 <body>
     <h1>Pointez votre caméra sur un objet</h1>
-    
+
     <video id="video" width="640" height="480" autoplay muted></video>
-    
+
     <h2 id="resultat">Chargement du modèle IA...</h2>
 
     <script src="script.js"></script>
